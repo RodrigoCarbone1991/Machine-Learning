@@ -21,6 +21,3 @@ Este proyecto implementa una **pequeña red neuronal** utilizando técnicas de *
 - Matplotlib (para visualización opcional)
 - Scikit-learn (para métricas y preprocesamiento)
 - Graphviz
-
----
-
