@@ -1,0 +1,7 @@
+tensorflow
+matplotlib
+pandas
+numpy
+scikit-learn
+pydot
+graphviz
