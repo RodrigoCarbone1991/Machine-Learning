@@ -44,12 +44,20 @@ joblib.dump(vectorizer, "vectorizer.pkl")
 def obtener_respuesta(pregunta_usuario):
     pregunta_limpia = limpiar_texto(pregunta_usuario)
     pregunta_vectorizada = vectorizer.transform([pregunta_limpia])
-    respuesta = modelo.predict(pregunta_vectorizada)
-    return respuesta[0]
+    probas = modelo.predict_proba(pregunta_vectorizada)[0]
+    indice_max = probas.argmax()
+    confianza = probas[indice_max]
+
+    if confianza < 0.6:
+     return "No entendi lo que me preguntaste, me lo podes repetir?"
+
+    respuesta = modelo.classes_[indice_max]
+    return respuesta
+
 
 # Interacción en bucle
 while True:
-    pregunta_usuario = input("Hazme una pregunta (o escribí 'salir'): ")
+    pregunta_usuario = input("Podes preguntarme algo o podes escribir 'salir': ")
     if pregunta_usuario.lower() == "salir":
         break
     print(obtener_respuesta(pregunta_usuario))
