@@ -8,3 +8,4 @@ graphviz
 seaborn
 jupyter
 graphviz
+jupyter

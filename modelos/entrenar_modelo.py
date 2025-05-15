@@ -55,6 +55,22 @@ def obtener_respuesta(pregunta_usuario):
     respuesta = modelo.classes_[indice_max]
     return respuesta
 
+dot = Digraph()
+
+dot.attr(rankdir='LR', size='8,5')
+
+dot.node('A', 'Carga CSV')
+dot.node('B', 'Limpieza de texto')
+dot.node('C', 'Vectorización TF-IDF')
+dot.node('D', 'Entrenamiento Naive Bayes')
+dot.node('E', 'Guardar modelo')
+dot.node('F', 'Clasificación de texto')
+dot.node('G', 'Respuesta al usuario')
+
+dot.edges(['AB', 'BC', 'CD', 'DE', 'EF', 'FG'])
+
+dot.render('flujo_entrenamiento', format='png', cleanup=False)
+dot
 
 # Interacción en bucle
 while True:
