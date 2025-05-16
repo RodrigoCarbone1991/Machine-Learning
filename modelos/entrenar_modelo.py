@@ -41,7 +41,7 @@ modelo.fit(X, respuestas)
 joblib.dump(modelo, "modelo_entrenado.pkl")
 joblib.dump(vectorizer, "vectorizer.pkl")
 
-# Función de respuesta
+# Función de respuesta con deteccion de incertidumbre 
 def obtener_respuesta(pregunta_usuario):
     pregunta_limpia = limpiar_texto(pregunta_usuario)
     pregunta_vectorizada = vectorizer.transform([pregunta_limpia])
@@ -49,28 +49,11 @@ def obtener_respuesta(pregunta_usuario):
     indice_max = probas.argmax()
     confianza = probas[indice_max]
 
-    if confianza < 0.6:
+    if confianza < 0.5:
      return "No entendi lo que me preguntaste, me lo podes repetir?"
 
     respuesta = modelo.classes_[indice_max]
     return respuesta
-
-dot = Digraph()
-
-dot.attr(rankdir='LR', size='8,5')
-
-dot.node('A', 'Carga CSV')
-dot.node('B', 'Limpieza de texto')
-dot.node('C', 'Vectorización TF-IDF')
-dot.node('D', 'Entrenamiento Naive Bayes')
-dot.node('E', 'Guardar modelo')
-dot.node('F', 'Clasificación de texto')
-dot.node('G', 'Respuesta al usuario')
-
-dot.edges(['AB', 'BC', 'CD', 'DE', 'EF', 'FG'])
-
-dot.render('flujo_entrenamiento', format='png', cleanup=False)
-dot
 
 # Interacción en bucle
 while True:
