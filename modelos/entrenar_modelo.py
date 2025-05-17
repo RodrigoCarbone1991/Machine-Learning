@@ -49,7 +49,7 @@ def obtener_respuesta(pregunta_usuario):
     indice_max = probas.argmax()
     confianza = probas[indice_max]
 
-    if confianza < 0.5:
+    if confianza < 0.3:
      return "No entendi lo que me preguntaste, me lo podes repetir?"
 
     respuesta = modelo.classes_[indice_max]
