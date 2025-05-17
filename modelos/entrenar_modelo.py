@@ -37,7 +37,9 @@ def obtener_respuesta(pregunta_usuario):
     confianza = probas[indice_max]
 
     if confianza < 0.3:
-     return "No entendi lo que me preguntaste, me lo podes repetir?"
+         with open("log_desconocidas.txt", "a") as f:
+            f.write(pregunta_usuario + "\n")
+    return "No entendi lo que me preguntaste, me lo podes repetir?"
 
     respuesta = modelo.classes_[indice_max]
     return respuesta
