@@ -4,8 +4,8 @@ pandas
 numpy
 scikit-learn
 pydot
-graphviz
 seaborn
 jupyter
-graphviz
-jupyter
+nltk
+re
+unicodedata
