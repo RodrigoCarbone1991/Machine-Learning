@@ -4,18 +4,19 @@ from sklearn.naive_bayes import MultinomialNB
 import joblib
 import re
 import unicodedata
+import snowballstemmer
+
+stemmer = snowballstemmer.stemmer('spanish')
 
 def limpiar_texto(texto):
-    # Pasar a minúsculas
     texto = texto.lower()
-    # Eliminar tildes
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto)
                     if unicodedata.category(c) != 'Mn')
-    # Eliminar signos de puntuación
     texto = re.sub(r'[^\w\s]', '', texto)
-    # Eliminar espacios múltiples
-    texto = re.sub(r'\s+', ' ', texto).strip()
-    return texto
+    tokens = texto.split()
+    texto_stem = ' '.join([stemmer.stemWord(token) for token in tokens])
+    return texto_stem
+
 
 dataset = pd.read_csv("datos/data_set.csv", skipinitialspace=True)
 
@@ -40,13 +41,35 @@ def obtener_respuesta(pregunta_usuario):
     indice_max = probas.argmax()
     confianza = probas[indice_max]
     
-    print("Cantidad de muestras en el dataset:", len(preguntas))
-    print("Cantidad de palabras en el vocabulario:", len(vectorizer.get_feature_names_out()))
-    print("Probabilidades de cada clase:", probas)
-    print("Confianza calculada:", confianza)
-    print("Categoría elegida:", modelo.classes_[indice_max])
+    rango_confianza = 0.3
+    
+    ancho = 90
+    linea_superior = "╔" + "═" * (ancho - 2) + "╗"
+    linea_inferior = "╚" + "═" * (ancho - 2) + "╝"
+    linea_separadora = "╠" + "═" * (ancho - 2) + "╣"
+    linea_divisoria = "║" + "─" * (ancho - 2) + "║"
 
-    if confianza < 0.3:
+    cabecera = "ANALISIS DEL MODELO SEGUN PROMPT"
+    items = [
+        f"Cantidad de pruebas en el dataset: {len(preguntas)}",
+        f"Cantidad de palabras en el vocabulario: {len(vectorizer.get_feature_names_out())}",
+        f"Probabilidad de cada clase: {probas}",
+        f"Clase con mayor probabilidad: {confianza}",
+        f"Nivel de confianza: {rango_confianza}",
+        
+        f"Categoría elegida: {modelo.classes_[indice_max]}",
+    ]
+
+    print(linea_superior)
+    print("║" + cabecera.center(ancho - 2) + "║")
+    print(linea_separadora)
+    for i, item in enumerate(items):
+        print("║ " + item.ljust(ancho - 3) + "║")
+        if i < len(items) - 1:
+            print(linea_divisoria)
+    print(linea_inferior)
+
+    if confianza < rango_confianza:
         with open("log_desconocidas.txt", "a") as f:
             f.write(pregunta_usuario + "\n")
         return "No entendi lo que me preguntaste, me lo podes repetir?"
