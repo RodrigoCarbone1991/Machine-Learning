@@ -5,6 +5,8 @@ import joblib
 import re
 import unicodedata
 import snowballstemmer
+from datetime import datetime
+
 
 stemmer = snowballstemmer.stemmer('spanish')
 
@@ -16,6 +18,24 @@ def limpiar_texto(texto):
     tokens = texto.split()
     texto_stem = ' '.join([stemmer.stemWord(token) for token in tokens])
     return texto_stem
+
+# Función para registrar preguntas desconocidas agrupadas por día
+def registrar_desconocida(pregunta_usuario):
+    hoy = datetime.now().strftime("%d/%m/%Y")
+    log_path = "log_desconocidas.txt"
+
+    try:
+        with open(log_path, "r") as f:
+            contenido = f.read()
+    except FileNotFoundError:
+        contenido = ""
+
+    if hoy not in contenido:
+        with open(log_path, "a") as f:
+            f.write(f"\n📅 {hoy}\n")
+
+    with open(log_path, "a") as f:
+        f.write(f"- {pregunta_usuario}\n")
 
 
 dataset = pd.read_csv("datos/data_set.csv", skipinitialspace=True)
@@ -70,9 +90,8 @@ def obtener_respuesta(pregunta_usuario):
     print(linea_inferior)
 
     if confianza < rango_confianza:
-        with open("log_desconocidas.txt", "a") as f:
-            f.write(pregunta_usuario + "\n")
-        return "No entendi lo que me preguntaste, me lo podes repetir?"
+        registrar_desconocida(pregunta_usuario)
+        return "No entendí lo que me preguntaste, ¿me lo podés repetir?"
     return modelo.classes_[indice_max]
 
 while True:
